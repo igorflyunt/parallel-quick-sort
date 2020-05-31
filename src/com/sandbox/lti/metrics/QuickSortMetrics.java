@@ -11,13 +11,44 @@ import static com.sandbox.lti.generator.DataGenerator.*;
 import static java.util.function.Predicate.not;
 
 public class QuickSortMetrics {
-    private static final String OPERATION_SEQUENTIAL = "sequential";
-    private static final String OPERATION_PARALLEL = "parallel";
+
+    private enum Operation {
+        SEQUENTIAL("sequential"),
+        PARALLEL ("parallel");
+
+        private final String name;
+
+        Operation(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
+    private enum ArrayType {
+        ONE_DIMENSIONAL("One"),
+        TWO_DIMENSIONAL("Two"),
+        THREE_DIMENSIONAL("Three");
+
+        private final String type;
+
+        ArrayType(String type) {
+            this.type = String.format("%s dimensional array", type);
+        }
+
+        @Override
+        public String toString() {
+            return type;
+        }
+    }
 
     private QuickSortMetrics() {}
 
     public static void testWithArray1D() {
-        testWithArray("One dimensional array", s -> false, QuickSortMetrics::testWithArray1D);
+        testWithArray(ArrayType.ONE_DIMENSIONAL, s -> false, QuickSortMetrics::testWithArray1D);
     }
 
     private static void testWithArray1D(int arraySize) {
@@ -26,7 +57,7 @@ public class QuickSortMetrics {
     }
 
     public static void testWithArray2D() {
-        testWithArray("Two dimensional array", not(s -> s.equals(SIZE_HUNDRED)),
+        testWithArray(ArrayType.TWO_DIMENSIONAL, not(s -> s.equals(SIZE_HUNDRED)),
                       QuickSortMetrics::testWithArray2D);
     }
 
@@ -36,7 +67,7 @@ public class QuickSortMetrics {
     }
 
     public static void testWithArray3D() {
-        testWithArray("Three dimensional array", not(s -> s.equals(SIZE_THOUSAND)),
+        testWithArray(ArrayType.THREE_DIMENSIONAL, not(s -> s.equals(SIZE_THOUSAND)),
                       QuickSortMetrics::testWithArray3D);
     }
 
@@ -45,8 +76,8 @@ public class QuickSortMetrics {
                            QuickSort::sort, QuickSort::parallelSort);
     }
 
-    private static void testWithArray(String name, Predicate<Integer> needsToSkip, Consumer<Integer> testConsumer) {
-        System.out.format("[%s]\n", name);
+    private static void testWithArray(ArrayType type, Predicate<Integer> needsToSkip, Consumer<Integer> testConsumer) {
+        System.out.format("[%s]\n", type);
         SIZES.stream()
              .dropWhile(needsToSkip)
              .forEach(size -> gaugeExecutionTime(testConsumer, size));
@@ -60,11 +91,11 @@ public class QuickSortMetrics {
     private static <T> void gaugeExecutionTime(int size, Function<Integer, T> arrGenerator,
                                                Consumer<T> quickSorter, Consumer<T> fjQuickSorter) {
         outputSize(size);
-        gaugeExecutionTime(OPERATION_SEQUENTIAL, quickSorter, arrGenerator.apply(size));
-        gaugeExecutionTime(OPERATION_PARALLEL, fjQuickSorter, arrGenerator.apply(size));
+        gaugeExecutionTime(Operation.SEQUENTIAL, quickSorter, arrGenerator.apply(size));
+        gaugeExecutionTime(Operation.PARALLEL, fjQuickSorter, arrGenerator.apply(size));
     }
 
-    private static <T> void gaugeExecutionTime(String operation, Consumer<T> quickSorter, T data) {
+    private static <T> void gaugeExecutionTime(Operation operation, Consumer<T> quickSorter, T data) {
         long startTime = System.currentTimeMillis();
         quickSorter.accept(data);
         long executionTime = System.currentTimeMillis() - startTime;
