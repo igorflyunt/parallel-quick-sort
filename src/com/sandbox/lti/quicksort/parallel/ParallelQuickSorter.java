@@ -24,13 +24,16 @@ public class ParallelQuickSorter extends CountedCompleter<int[]> {
 
     @Override
     public void compute() {
-        if (left < right) {
-            int pivot = partition(data, left, right);
-            forkSubset(pivot);
-            new ParallelQuickSorter(this, data, pivot + 1, right).compute();
-        } else {
+        if (left < right)
+            sort();
+        else
             propagateCompletion();
-        }
+    }
+
+    private void sort() {
+        int pivot = partition(data, left, right);
+        forkSubset(pivot);
+        new ParallelQuickSorter(this, data, pivot + 1, right).compute();
     }
 
     private void forkSubset(int pivot) {

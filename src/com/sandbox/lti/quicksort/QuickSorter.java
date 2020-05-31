@@ -2,7 +2,10 @@ package com.sandbox.lti.quicksort;
 
 import static com.sandbox.lti.quicksort.QuickSortHelper.partition;
 
-class QuickSorter {
+final class QuickSorter {
+
+    private QuickSorter() {}
+
     public static void sort(int[] data, int left, int right) {
         if (left < right) {
             int pivot = partition(data, left, right);
