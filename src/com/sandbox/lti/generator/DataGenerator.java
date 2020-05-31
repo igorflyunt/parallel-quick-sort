@@ -44,7 +44,7 @@ public final class DataGenerator {
     }
 
     public static int[] generateArray1D(int arraySize) {
-        return rand.ints(arraySize, 0, 10_000_000)
+        return rand.ints(arraySize, 0, SIZE_TEN_MILLION)
                    .toArray();
     }
 }
