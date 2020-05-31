@@ -8,6 +8,3 @@ public class Main {
         QuickSortMetrics.testWithArray1D();
     }
 }
-
-
-
