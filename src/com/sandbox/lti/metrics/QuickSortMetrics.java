@@ -5,7 +5,6 @@ import com.sandbox.lti.quicksort.QuickSort;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import static com.sandbox.lti.generator.DataGenerator.*;
 import static java.util.function.Predicate.not;
@@ -48,7 +47,7 @@ public class QuickSortMetrics {
     private QuickSortMetrics() {}
 
     public static void testWithArray1D() {
-        testWithArray(ArrayType.ONE_DIMENSIONAL, s -> false, QuickSortMetrics::testWithArray1D);
+        testWithArray(ArrayType.ONE_DIMENSIONAL, SIZE_TEN, QuickSortMetrics::testWithArray1D);
     }
 
     private static void testWithArray1D(int arraySize) {
@@ -57,8 +56,7 @@ public class QuickSortMetrics {
     }
 
     public static void testWithArray2D() {
-        testWithArray(ArrayType.TWO_DIMENSIONAL, not(s -> s.equals(SIZE_HUNDRED)),
-                      QuickSortMetrics::testWithArray2D);
+        testWithArray(ArrayType.TWO_DIMENSIONAL, SIZE_HUNDRED, QuickSortMetrics::testWithArray2D);
     }
 
     private static void testWithArray2D(int arraySize) {
@@ -67,8 +65,7 @@ public class QuickSortMetrics {
     }
 
     public static void testWithArray3D() {
-        testWithArray(ArrayType.THREE_DIMENSIONAL, not(s -> s.equals(SIZE_THOUSAND)),
-                      QuickSortMetrics::testWithArray3D);
+        testWithArray(ArrayType.THREE_DIMENSIONAL, SIZE_THOUSAND, QuickSortMetrics::testWithArray3D);
     }
 
     private static void testWithArray3D(int arraySize) {
@@ -76,11 +73,11 @@ public class QuickSortMetrics {
                            QuickSort::sort, QuickSort::parallelSort);
     }
 
-    private static void testWithArray(ArrayType type, Predicate<Integer> needsToSkip, Consumer<Integer> testConsumer) {
+    private static void testWithArray(ArrayType type, int size, Consumer<Integer> testConsumer) {
         System.out.format("[%s]\n", type);
         SIZES.stream()
-             .dropWhile(needsToSkip)
-             .forEach(size -> gaugeExecutionTime(testConsumer, size));
+             .dropWhile(not(s -> s.equals(size)))
+             .forEach(s -> gaugeExecutionTime(testConsumer, s));
     }
 
     private static void gaugeExecutionTime(Consumer<Integer> testConsumer, Integer size) {
