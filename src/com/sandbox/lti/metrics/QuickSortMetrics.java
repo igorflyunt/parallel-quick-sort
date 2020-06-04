@@ -73,10 +73,10 @@ public class QuickSortMetrics {
                            QuickSort::sort, QuickSort::parallelSort);
     }
 
-    private static void testWithArray(ArrayType type, int size, Consumer<Integer> testConsumer) {
+    private static void testWithArray(ArrayType type, int startSize, Consumer<Integer> testConsumer) {
         System.out.format("[%s]\n", type);
         SIZES.stream()
-             .dropWhile(not(s -> s.equals(size)))
+             .dropWhile(not(s -> s.equals(startSize)))
              .forEach(s -> gaugeExecutionTime(testConsumer, s));
     }
 

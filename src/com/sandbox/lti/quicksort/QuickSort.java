@@ -52,7 +52,7 @@ public final class QuickSort {
     private static <T> void parallelSort(T data, BiConsumer<T, Consumer<int[]>> itrConsumer,
                                          Supplier<FJQuickSortTaskAccumulator> accuSupplier) {
         var accu = accuSupplier.get();
-        itrConsumer.accept(data, accu::accumulate);
+        itrConsumer.accept(data, accu);
         ForkJoinTask.invokeAll(accu.getTasks());
     }
 
@@ -66,11 +66,12 @@ public final class QuickSort {
             consumer.accept(els);
     }
 
-    private static class FJQuickSortTaskAccumulator {
+    private static class FJQuickSortTaskAccumulator implements Consumer<int[]> {
 
         private final List<ForkJoinTask<int[]>> tasks = new ArrayList<>();
 
-        public void accumulate(int[] data) {
+        @Override
+        public void accept(int[] data) {
             tasks.add(new ParallelQuickSorter(data));
         }
 
